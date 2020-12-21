@@ -1,0 +1,28 @@
+<head>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <form @submit.prevent="onSubmit">
+            <div v-if="directories.length">
+                <p>Directories</p>
+                <ul v-for="dir in directories">
+                    <li>
+                        <label :for="dir">{{dir}}</label>
+                        <input :id="dir" :value="dir" type="checkbox" v-model="checked">
+                    </li>
+                </ul>
+            </div>
+            <div v-else>
+                <p>No directory</p>
+            </div>
+            <button>Run</button>
+            <button type="button" @click="clearLog">Clear log</button>
+        </form>
+        <div>
+            <span v-for="log in outputLog">{{log}}<br/></span>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>

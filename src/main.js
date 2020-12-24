@@ -74,3 +74,12 @@ async function execute(command, args) {
     console.log(`child process exited with code ${code}`);
   });
 }
+
+const reader = require('./read-pom');
+const pomFiles = [
+    '‪C:\\work\\cob\\cob_portal_kit\\pom.xml', 
+    'C:\\work\\cob\\cob_portal_template\\pom.xml',
+    'C:\\work\\cob\\cob_portal_style\\pom.xml'
+];
+
+reader(pomFiles);

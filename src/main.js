@@ -76,10 +76,6 @@ async function execute(command, args) {
 }
 
 const reader = require('./read-pom');
-const pomFiles = [
-    '‪C:\\work\\cob\\cob_portal_kit\\pom.xml', 
-    'C:\\work\\cob\\cob_portal_template\\pom.xml',
-    'C:\\work\\cob\\cob_portal_style\\pom.xml'
-];
+const pomFiles = [];
 
 reader(pomFiles);

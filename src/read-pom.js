@@ -10,7 +10,7 @@ function readPomFile(filePath, callback) {
 }
 
 function readPomFileSync(filePath) {
-    let data = fs.readFileSync(filePath, 'utf-8');
+    let data = fs.readFileSync(filePath, fileOpts);
     return convertToJson(data);
 }
 
@@ -28,15 +28,24 @@ function generateDependencyTree(pomFiles) {
             const dependencies = node.dependencies.dependency;
             node.dependencies.dependency = getDependencyNodeAsArray(dependencies);
         }
-        // node.equals = other => node.artifactId == other.artifactId && node.groupId == other.groupId && node.version == other.version;
         return node;
     });
-    let tree = {};
-    return flatModules.forEach(element => {
-        if (element?.dependencies?.dependency) {
+    
+    let rootModules = flatModules.filter(element => !element?.dependencies?.dependency.some(dependency => {
+        return !!getModule(flatModules, dependency)
+    }));
+    return rootModules;
+}
 
-        }
-    });
+function getModule(flatModules, dependency) {
+    for (const i in flatModules) {
+        let module = flatModules[i];
+        if (equals(module, dependency)) return module;
+    }
+}
+
+function equals(left, right) {
+    return left.artifactId == right.artifactId && left.groupId == right.groupId && left.version == right.version;
 }
 
 function getDependencyNodeAsArray(dependencies) {
@@ -66,9 +75,7 @@ function compare(left, right) {
 function isLeftDependsOnRight(left, right) {
     if(left.dependencies) {
         const rightId = right.pomFile;
-        return Object.values(left.dependencies.dependency).some(dependency => {
-            return dependency.groupId == right.groupId && dependency.artifactId == right.artifactId;
-        });
+        return Object.values(left.dependencies.dependency).some(dependency => equals(dependency, right));
     }
     return false;
 }

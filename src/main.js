@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 const port = 8000;
-const wsDir = '../mvn-test-projects';
+const wsDir = 'C:\\work\\cob';
 const socket = new WebSocket('ws://localhost:8080');
 
 socket.on('open', function open() {
@@ -39,7 +39,7 @@ app.get('/list/dir', function (req, res) {
 app.post('/build', function (req, res) {
   let modules = req.body;
   console.log('Body:', modules);
-  let result = modules.forEach(async module => await execute('mvn', ['clean', 'install', '-f', wsDir + '/' + module + '/pom.xml']));
+  let result = modules.forEach(async module => await execute('mvn', ['clean', 'install', '-f', path.resolve(wsDir, module, 'pom.xml')]));
   console.log(result);
   socket.send(JSON.stringify(result));
   res.sendStatus(200);
@@ -61,12 +61,20 @@ wss.on('connection', function connection(ws) {
 });
 
 async function execute(command, args) {
-  const child = await spawn(command, args);
+  const opts = {
+    shell: 'C:\\Program Files\\Git\\usr\\bin\\bash.exe'
+  };
+  const child = await spawn(command, args, opts);
   child.stdout.on('data', (data) => {
+    console.log(data);
     socket.send(data);
   });
   
   child.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+  });
+
+  child.on('error', (data) => {
     console.error(`stderr: ${data}`);
   });
   
@@ -75,11 +83,11 @@ async function execute(command, args) {
   });
 }
 
-const reader = require('./read-pom');
-const pomFiles = [
-    '‪C:\\work\\cob\\cob_portal_kit\\pom.xml', 
-    'C:\\work\\cob\\cob_portal_template\\pom.xml',
-    'C:\\work\\cob\\cob_portal_style\\pom.xml'
-];
+// const reader = require('./read-pom');
+// const pomFiles = [
+//     '‪C:\\work\\cob\\cob_portal_kit\\pom.xml', 
+//     'C:\\work\\cob\\cob_portal_template\\pom.xml',
+//     'C:\\work\\cob\\cob_portal_style\\pom.xml'
+// ];
 
-reader(pomFiles);
+// reader(pomFiles);
